@@ -11,6 +11,19 @@ It contains only:
 Raw sequencing files and large results are **not** kept in Git.
 
 
+
+## Typical project layout
+
+```
+nf_smrnaseq/
+├── data/                    # (not in Git)
+├── nextflow.config
+├── run_work.sh
+├── sample_sheet.csv
+└── README.md
+```
+
+
 ## 1) Install Nextflow (on the HPC login node)
 
 > Requires: a working Java module (we use `java/jdk-21.0.2`).
@@ -83,25 +96,44 @@ qsub -- run_work.sh sample_sheet.csv results/test_subset GRCh38 hsa
 
 
 
-## Outputs (where to look)
 
-* Per-step results under your chosen `--outdir`, e.g. `results/test/`
-* **MultiQC** HTML report: `results/test/multiqc/multiqc_report.html`
-* Run metadata: `pipeline_trace.txt`, `pipeline_timeline.html`
-* Nextflow working dirs: `/home_beegfs/<user>/.nxf_work` (safe to clean after the run)
+## Outputs you should see
 
----
-
-## Typical project layout
+After a successful run, your `--outdir` will look like this (top level):
 
 ```
-nf_smrnaseq/
-├── data/                    # (not in Git)
-├── nextflow.config
-├── run_work.sh
-├── sample_sheet.csv
-└── README.md
+results/test
+├── fastp/
+├── genome_quant/
+├── mirdeep2/
+├── mirna_quant/
+├── mirtrace/
+├── multiqc/
+├── pipeline_info/
+├── pipeline_report.html
+├── pipeline_timeline.html
+└── pipeline_trace.txt
 ```
+
+
+* **Top-level Nextflow reports**
+
+  * `pipeline_report.html` → runtime summary (tasks, resources).
+  * `pipeline_timeline.html` → Gantt chart of process execution.
+  * `pipeline_trace.txt` → per-process accounting (CPUs, RAM, time). Useful for performance tuning.
+
+### Quick answers
+
+* **Where are the miRNA counts (per gene/miRNA)?**
+  → `mirna_quant/mirtop/mirna.tsv` (rows = miRBase IDs, columns = samples).
+
+* **Where are isomiR-resolved counts and annotations?**
+  → `mirna_quant/mirtop/joined_samples_mirtop.tsv`.
+
+* **Where’s the all-in-one QC?**
+  → `multiqc/multiqc_report.html` (open in a browser).
+
+
 
 
 
